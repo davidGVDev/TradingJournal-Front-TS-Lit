@@ -115,7 +115,7 @@ export class AppButton extends LitElement {
       >
         ${this.loading
           ? html`<span class="spinner"></span>`
-          : html`<slot></slot>`}
+          : html`<slot name="icon"></slot>`}
         <slot></slot>
       </button>
     `;

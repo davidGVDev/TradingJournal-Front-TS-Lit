@@ -16,6 +16,8 @@ export abstract class FieldBase extends LitElement {
 
   static styles: CSSResultGroup = [baseStyles, fieldStyles];
 
+  protected get formValue(): string | null { return this.value; }
+
   protected internals = this.attachInternals();
 
   @property() label = '';
@@ -53,7 +55,7 @@ export abstract class FieldBase extends LitElement {
   }
 
   updated() {
-    this.internals.setFormValue(this.value);
+    this.internals.setFormValue(this.formValue);
     this.syncInternals();
   }
 
@@ -92,9 +94,15 @@ export abstract class FieldBase extends LitElement {
     return c.validationMessage;
   }
 
+  protected renderMessage(extraClass = '') {
+    const msg = this.shownMessage;
+    if (msg) return html`<div class="message error ${extraClass}" id="message" role="alert">${msg}</div>`;
+    return this.hint ? html`<div class="message ${extraClass}" id="message">${this.hint}</div>` : nothing;
+  }
+
   // Se dispara cuando el form intenta enviarse y este campo es inválido
   private onInvalid = (e: Event) => {
-    e.preventDefault();                       // evita el globo nativo del navegador
+    e.preventDefault();                       
     this.touched = true;
     this.validate();
   };
@@ -131,10 +139,7 @@ export abstract class FieldBase extends LitElement {
           </label>` : nothing}
 
         ${this.renderControl()}
-
-        ${msg
-          ? html`<div class="message error" id="message" role="alert">${msg}</div>`
-          : this.hint ? html`<div class="message" id="message">${this.hint}</div>` : nothing}
+        ${this.renderMessage()}
       </div>
     `;
   }
